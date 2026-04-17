@@ -50,8 +50,6 @@ async function handlePullRequestOpened({ octokit, payload }) {
   }
 }
 
-app.webhooks.on("pull_request.opened", handlePullRequestOpened);
-
 async function handleIssueCommentCreated({ octokit, payload }) {
   if (!payload.issue.pull_request) return;
   if (!payload.comment.body.includes("trigger")) return;
@@ -81,8 +79,8 @@ async function handleIssueCommentCreated({ octokit, payload }) {
   }
 }
 
+app.webhooks.on("pull_request.opened", handlePullRequestOpened);
 app.webhooks.on("issue_comment.created", handleIssueCommentCreated);
-
 app.webhooks.onError((error) => {
   if (error.name === "AggregateError") {
     console.error(`Error processing request: ${error.event}`);
