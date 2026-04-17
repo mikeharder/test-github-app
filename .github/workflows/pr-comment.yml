@@ -19,5 +19,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+          TRIGGER_TIME: ${{ github.event.comment.created_at || github.event.pull_request.created_at }}
         run: |
-          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "test comment from github action"
+          current_time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          trigger_epoch=$(date -u -d "$TRIGGER_TIME" +%s)
+          current_epoch=$(date -u -d "$current_time" +%s)
+          gap=$((current_epoch - trigger_epoch))
+          body=$(printf 'Triggering comment time: %s\nCurrent time: %s\nGap (seconds): %s' "$TRIGGER_TIME" "$current_time" "$gap")
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$body"

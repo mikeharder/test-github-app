@@ -56,6 +56,15 @@ async function handleIssueCommentCreated({ octokit, payload }) {
 
   console.log(`Received a "trigger" PR comment on #${payload.issue.number}`);
 
+  const triggerTime = new Date(payload.comment.created_at);
+  const currentTime = new Date();
+  const gapSeconds = (currentTime.getTime() - triggerTime.getTime()) / 1000;
+  const body = [
+    `Triggering comment time: ${triggerTime.toISOString()}`,
+    `Current time: ${currentTime.toISOString()}`,
+    `Gap (seconds): ${gapSeconds}`,
+  ].join("\n");
+
   try {
     await octokit.request(
       "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
@@ -63,7 +72,7 @@ async function handleIssueCommentCreated({ octokit, payload }) {
         owner: payload.repository.owner.login,
         repo: payload.repository.name,
         issue_number: payload.issue.number,
-        body: messageForNewPRs,
+        body: body,
         headers: {
           "x-github-api-version": "2026-03-10",
         },
