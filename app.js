@@ -52,7 +52,7 @@ async function handlePullRequestOpened({ octokit, payload }) {
 
 async function handleIssueCommentCreated({ octokit, payload }) {
   if (!payload.issue.pull_request) return;
-  if (!payload.comment.body.includes("trigger")) return;
+  if (payload.comment.body !== "trigger") return;
 
   console.log(`Received a "trigger" PR comment on #${payload.issue.number}`);
 
