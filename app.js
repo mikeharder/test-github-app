@@ -52,6 +52,39 @@ async function handlePullRequestOpened({ octokit, payload }) {
 
 app.webhooks.on("pull_request.opened", handlePullRequestOpened);
 
+async function handleIssueCommentCreated({ octokit, payload }) {
+  if (!payload.issue.pull_request) return;
+  if (payload.comment.user.login !== "mikeharder") return;
+
+  console.log(
+    `Received a PR comment from mikeharder on #${payload.issue.number}`,
+  );
+
+  try {
+    await octokit.request(
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
+      {
+        owner: payload.repository.owner.login,
+        repo: payload.repository.name,
+        issue_number: payload.issue.number,
+        body: messageForNewPRs,
+        headers: {
+          "x-github-api-version": "2026-03-10",
+        },
+      },
+    );
+  } catch (error) {
+    if (error.response) {
+      console.error(
+        `Error! Status: ${error.response.status}. Message: ${error.response.data.message}`,
+      );
+    }
+    console.error(error);
+  }
+}
+
+app.webhooks.on("issue_comment.created", handleIssueCommentCreated);
+
 app.webhooks.onError((error) => {
   if (error.name === "AggregateError") {
     console.error(`Error processing request: ${error.event}`);
