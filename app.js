@@ -20,8 +20,7 @@ const app = new App({
   },
 });
 
-const messageForNewPRs =
-  "Thanks for opening a new PR! Please follow our contributing guidelines to make your PR easier to review.";
+const messageForNewPRs = "test comment from github app";
 
 async function handlePullRequestOpened({ octokit, payload }) {
   console.log(
