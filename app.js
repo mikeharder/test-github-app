@@ -54,11 +54,9 @@ app.webhooks.on("pull_request.opened", handlePullRequestOpened);
 
 async function handleIssueCommentCreated({ octokit, payload }) {
   if (!payload.issue.pull_request) return;
-  if (payload.comment.user.login !== "mikeharder") return;
+  if (!payload.comment.body.includes("trigger")) return;
 
-  console.log(
-    `Received a PR comment from mikeharder on #${payload.issue.number}`,
-  );
+  console.log(`Received a "trigger" PR comment on #${payload.issue.number}`);
 
   try {
     await octokit.request(
