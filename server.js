@@ -105,7 +105,14 @@ const localWebhookUrl = `http://${host}:${port}${path}`;
 
 const middleware = createNodeMiddleware(app.webhooks, { path });
 
-http.createServer(middleware).listen(port, () => {
-  console.log(`Server is listening for events at: ${localWebhookUrl}`);
-  console.log("Press Ctrl + C to quit.");
-});
+http
+  .createServer((req, res) => {
+    console.log(
+      `${new Date().toISOString()} ${req.method} ${req.url} from ${req.socket.remoteAddress}`,
+    );
+    middleware(req, res);
+  })
+  .listen(port, () => {
+    console.log(`Server is listening for events at: ${localWebhookUrl}`);
+    console.log("Press Ctrl + C to quit.");
+  });

@@ -11,7 +11,7 @@
     "smee-client": "^5.0.0"
   },
   "scripts": {
-    "server": "node app.js",
+    "start": "node server.js",
     "smee": "dotenv -- sh -c 'smee -u $WEBHOOK_PROXY_URL -t http://localhost:3000/api/webhook'"
   }
 }
