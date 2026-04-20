@@ -1,3 +1,4 @@
+import { useAzureMonitor } from "@azure/monitor-opentelemetry";
 import { createNodeMiddleware } from "@octokit/webhooks";
 import dotenv from "dotenv";
 import fs from "fs";
@@ -6,6 +7,17 @@ import { App } from "octokit";
 
 dotenv.config();
 
+if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
+  useAzureMonitor({ enableLiveMetrics: true });
+  console.log("Azure Monitor OpenTelemetry enabled");
+} else {
+  console.log(
+    "APPLICATIONINSIGHTS_CONNECTION_STRING not set; skipping Azure Monitor",
+  );
+}
+
+const hostname = process.env.HOSTNAME;
+const port = process.env.PORT;
 const appId = process.env.APP_ID;
 const webhookSecret = process.env.WEBHOOK_SECRET;
 const privateKeyPath = process.env.PRIVATE_KEY_PATH;
@@ -98,10 +110,8 @@ app.webhooks.onError((error) => {
   }
 });
 
-const port = 3000;
-const host = "localhost";
 const path = "/api/webhook";
-const localWebhookUrl = `http://${host}:${port}${path}`;
+const localWebhookUrl = `http://${hostname}:${port}${path}`;
 
 const middleware = createNodeMiddleware(app.webhooks, { path });
 
