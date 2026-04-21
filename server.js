@@ -1,5 +1,7 @@
 import { useAzureMonitor } from "@azure/monitor-opentelemetry";
 import { createNodeMiddleware } from "@octokit/webhooks";
+import { registerInstrumentations } from "@opentelemetry/instrumentation";
+import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import dotenv from "dotenv";
 import fs from "fs";
 import http from "http";
@@ -9,7 +11,10 @@ dotenv.config();
 
 if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
   useAzureMonitor({ enableLiveMetrics: true });
-  console.log("Azure Monitor OpenTelemetry enabled");
+  registerInstrumentations({
+    instrumentations: [new UndiciInstrumentation()],
+  });
+  console.log("Azure Monitor OpenTelemetry enabled (with undici/fetch)");
 } else {
   console.log(
     "APPLICATIONINSIGHTS_CONNECTION_STRING not set; skipping Azure Monitor",

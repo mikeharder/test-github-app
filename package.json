@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "@azure/monitor-opentelemetry": "^1.16.0",
+    "@opentelemetry/instrumentation-undici": "^0.25.0",
     "dotenv": "^17.4.2",
     "octokit": "^5.0.5"
   },
