@@ -60,6 +60,11 @@ const app = new App({
 
 const messageForNewPRs = "test comment from github app";
 
+/**
+ * @param {object} event
+ * @param {import("octokit").Octokit} event.octokit
+ * @param {import("@octokit/webhooks").EmitterWebhookEvent<"pull_request.opened">["payload"]} event.payload
+ */
 async function handlePullRequestOpened({ octokit, payload }) {
   console.log(
     `Received a pull request event for #${payload.pull_request.number}`,
@@ -79,9 +84,13 @@ async function handlePullRequestOpened({ octokit, payload }) {
       },
     );
   } catch (error) {
-    if (error.response) {
+    if (error instanceof Error && "response" in error) {
+      const err =
+        /** @type {{ response: { status: number; data: { message: string } } }} */ (
+          error
+        );
       console.error(
-        `Error! Status: ${error.response.status}. Message: ${error.response.data.message}`,
+        `Error! Status: ${err.response.status}. Message: ${err.response.data.message}`,
       );
     }
     console.error(error);
@@ -136,9 +145,13 @@ async function handleIssueCommentCreated({ octokit, payload }) {
       },
     );
   } catch (error) {
-    if (error.response) {
+    if (error instanceof Error && "response" in error) {
+      const err =
+        /** @type {{ response: { status: number; data: { message: string } } }} */ (
+          error
+        );
       console.error(
-        `Error! Status: ${error.response.status}. Message: ${error.response.data.message}`,
+        `Error! Status: ${err.response.status}. Message: ${err.response.data.message}`,
       );
     }
     console.error(error);
@@ -149,7 +162,7 @@ app.webhooks.on("pull_request.opened", handlePullRequestOpened);
 app.webhooks.on("issue_comment.created", handleIssueCommentCreated);
 app.webhooks.onError((error) => {
   if (error.name === "AggregateError") {
-    console.error(`Error processing request: ${error.event}`);
+    console.error(`Error processing request: ${JSON.stringify(error.event)}`);
   } else {
     console.error(error);
   }
