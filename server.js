@@ -4,8 +4,7 @@ import { trace } from "@opentelemetry/api";
 import { logs, SeverityNumber } from "@opentelemetry/api-logs";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
-import fs from "fs";
-import http from "http";
+import { readFile } from "fs/promises";
 import { App } from "octokit";
 
 // Code Quality
@@ -34,11 +33,22 @@ const logger = logs.getLogger("test-github-app");
 
 const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
 const port = process.env.PORT || "3000";
+
+if (!process.env.CLIENT_ID) {
+  throw new Error("CLIENT_ID is not set");
+}
+if (!process.env.WEBHOOK_SECRET) {
+  throw new Error("WEBHOOK_SECRET is not set");
+}
+if (!process.env.PRIVATE_KEY_PATH) {
+  throw new Error("PRIVATE_KEY_PATH is not set");
+}
+
 const clientId = process.env.CLIENT_ID;
 const webhookSecret = process.env.WEBHOOK_SECRET;
 const privateKeyPath = process.env.PRIVATE_KEY_PATH;
 
-const privateKey = fs.readFileSync(privateKeyPath, "utf8");
+const privateKey = await readFile(privateKeyPath, "utf8");
 
 const app = new App({
   appId: clientId,
@@ -150,14 +160,12 @@ const localWebhookUrl = `http://${host}:${port}${path}`;
 
 const middleware = createNodeMiddleware(app.webhooks, { path });
 
-http
-  .createServer((req, res) => {
-    console.log(
-      `${new Date().toISOString()} ${req.method} ${req.url} from ${req.socket.remoteAddress}`,
-    );
-    middleware(req, res);
-  })
-  .listen(port, host, () => {
-    console.log(`Server is listening for events at: ${localWebhookUrl}`);
-    console.log("Press Ctrl + C to quit.");
-  });
+createServer((req, res) => {
+  console.log(
+    `${new Date().toISOString()} ${req.method} ${req.url} from ${req.socket.remoteAddress}`,
+  );
+  middleware(req, res);
+}).listen(port, host, () => {
+  console.log(`Server is listening for events at: ${localWebhookUrl}`);
+  console.log("Press Ctrl + C to quit.");
+});
