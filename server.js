@@ -39,7 +39,7 @@ const privateKeyPath = process.env.PRIVATE_KEY_PATH;
 const privateKey = fs.readFileSync(privateKeyPath, "utf8");
 
 const app = new App({
-  appId: appId,
+  appId: clientId,
   privateKey: privateKey,
   webhooks: {
     secret: webhookSecret,
@@ -144,7 +144,7 @@ app.webhooks.onError((error) => {
 });
 
 const path = "/api/webhook";
-const localWebhookUrl = `http://${hostname}:${port}${path}`;
+const localWebhookUrl = `http://${host}:${port}${path}`;
 
 const middleware = createNodeMiddleware(app.webhooks, { path });
 
