@@ -9,6 +9,7 @@ import fs from "fs";
 import http from "http";
 import { App } from "octokit";
 
+// TODO: Deploy to app service
 // TODO: Enable JS comments and intellisense
 // TODO: Enable ESLint
 // TODO: Enable Prettier
