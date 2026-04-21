@@ -1,11 +1,18 @@
 import { useAzureMonitor } from "@azure/monitor-opentelemetry";
 import { createNodeMiddleware } from "@octokit/webhooks";
+import { trace } from "@opentelemetry/api";
+import { logs, SeverityNumber } from "@opentelemetry/api-logs";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import dotenv from "dotenv";
 import fs from "fs";
 import http from "http";
 import { App } from "octokit";
+
+// TODO: Enable JS comments and intellisense
+// TODO: Enable ESLint
+// TODO: Enable Prettier
+// TODO: Add unit tests
 
 dotenv.config();
 
@@ -20,6 +27,8 @@ if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
     "APPLICATIONINSIGHTS_CONNECTION_STRING not set; skipping Azure Monitor",
   );
 }
+
+const logger = logs.getLogger("test-github-app");
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT;
@@ -67,7 +76,26 @@ async function handlePullRequestOpened({ octokit, payload }) {
   }
 }
 
+/**
+ * @param {object} event
+ * @param {import("octokit").Octokit} event.octokit
+ * @param {import("@octokit/webhooks").EmitterWebhookEvent<"issue_comment.created">["payload"]} event.payload
+ */
 async function handleIssueCommentCreated({ octokit, payload }) {
+  const span = trace.getActiveSpan();
+  span?.setAttributes({
+    issue_number: payload.issue?.number,
+  });
+
+  logger.emit({
+    severityNumber: SeverityNumber.INFO,
+    body: JSON.stringify(payload),
+    attributes: {
+      issue_number: payload.issue?.number,
+      "github.event": "issue_comment.created",
+    },
+  });
+
   if (!payload.issue.pull_request) return;
   if (payload.comment.body !== "trigger") return;
 
