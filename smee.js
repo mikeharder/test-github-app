@@ -9,4 +9,4 @@ const port = process.env.PORT || "3000";
 const target = `http://localhost:${port}/api/webhook`;
 
 const client = new Client({ source, target });
-client.start();
+await client.start();
