@@ -9,7 +9,6 @@ import http from "http";
 import { App } from "octokit";
 
 // TODO: Move webhook_secret and certificate to KV
-// TODO: Use client id instead of app id
 // TODO: Deploy to app service
 // TODO: Send events from test repo to app service (in addition to dev machine)
 // TODO: Enable JS comments and intellisense
