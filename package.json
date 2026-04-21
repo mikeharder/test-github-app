@@ -14,10 +14,20 @@
     "octokit": "^5.0.5"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.0",
     "@octokit/webhooks": "^14.2.0",
-    "smee-client": "^5.0.0"
+    "@tsconfig/node22": "^22.0.5",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.0.0",
+    "globals": "^17.0.0",
+    "smee-client": "^5.0.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.58.0"
   },
   "scripts": {
+    "lint": "npm run lint:eslint && npm run lint:tsc",
+    "lint:eslint": "cross-env DEBUG=eslint:eslint,eslint:linter eslint",
+    "lint:tsc": "tsc --build --verbose",
     "start": "node --env-file-if-exists=.env --import @azure/monitor-opentelemetry/loader server.js",
     "smee": "node --env-file-if-exists=.env smee.js"
   }

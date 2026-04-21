@@ -8,12 +8,14 @@ import fs from "fs";
 import http from "http";
 import { App } from "octokit";
 
-// TODO: Move webhook_secret and certificate to KV
-// TODO: Deploy to app service
-// TODO: Send events from test repo to app service (in addition to dev machine)
+// Code Quality
 // TODO: Enable JS comments and intellisense
 // TODO: Enable ESLint
 // TODO: Enable Prettier
+
+// TODO: Move webhook_secret and certificate to KV
+// TODO: Deploy to app service
+// TODO: Send events from test repo to app service (in addition to dev machine)
 // TODO: Add unit tests
 
 if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
