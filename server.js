@@ -4,19 +4,18 @@ import { trace } from "@opentelemetry/api";
 import { logs, SeverityNumber } from "@opentelemetry/api-logs";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
-import dotenv from "dotenv";
 import fs from "fs";
 import http from "http";
 import { App } from "octokit";
 
+// TODO: Move webhook_secret and certificate to KV
+// TODO: Use client id instead of app id
 // TODO: Deploy to app service
 // TODO: Send events from test repo to app service (in addition to dev machine)
 // TODO: Enable JS comments and intellisense
 // TODO: Enable ESLint
 // TODO: Enable Prettier
 // TODO: Add unit tests
-
-dotenv.config();
 
 if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
   useAzureMonitor({ enableLiveMetrics: true });
@@ -32,9 +31,9 @@ if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
 
 const logger = logs.getLogger("test-github-app");
 
-const hostname = process.env.HOSTNAME;
-const port = process.env.PORT;
-const appId = process.env.APP_ID;
+const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
+const port = process.env.PORT || "3000";
+const clientId = process.env.CLIENT_ID;
 const webhookSecret = process.env.WEBHOOK_SECRET;
 const privateKeyPath = process.env.PRIVATE_KEY_PATH;
 
@@ -157,7 +156,7 @@ http
     );
     middleware(req, res);
   })
-  .listen(port, () => {
+  .listen(port, host, () => {
     console.log(`Server is listening for events at: ${localWebhookUrl}`);
     console.log("Press Ctrl + C to quit.");
   });

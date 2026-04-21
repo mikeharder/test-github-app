@@ -3,21 +3,22 @@
   "private": "true",
   "type": "module",
   "main": "server.js",
+  "engines": {
+    "node": "^22.21.0 || >=24.10.0"
+  },
   "dependencies": {
     "@azure/monitor-opentelemetry": "^1.16.0",
-    "@opentelemetry/api-logs": "^0.208.0",
     "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/api-logs": "^0.208.0",
     "@opentelemetry/instrumentation-undici": "^0.25.0",
-    "dotenv": "^17.4.2",
     "octokit": "^5.0.5"
   },
   "devDependencies": {
     "@octokit/webhooks": "^14.2.0",
-    "dotenv-cli": "^11.0.0",
     "smee-client": "^5.0.0"
   },
   "scripts": {
-    "start": "node --import @azure/monitor-opentelemetry/loader server.js",
-    "smee": "dotenv -- sh -c 'smee -u $WEBHOOK_PROXY_URL -t http://localhost:3000/api/webhook'"
+    "start": "node --env-file-if-exists=.env --import @azure/monitor-opentelemetry/loader server.js",
+    "smee": "node --env-file-if-exists=.env smee.js"
   }
 }
