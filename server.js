@@ -35,9 +35,7 @@ if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
   });
   console.log("Azure Monitor OpenTelemetry enabled (with undici/fetch)");
 } else {
-  console.log(
-    "APPLICATIONINSIGHTS_CONNECTION_STRING not set; skipping Azure Monitor",
-  );
+  console.log("APPLICATIONINSIGHTS_CONNECTION_STRING not set; skipping Azure Monitor");
 }
 
 const logger = logs.getLogger("test-github-app");
@@ -66,32 +64,24 @@ const messageForNewPRs = "test comment from github app";
  * @param {import("@octokit/webhooks").EmitterWebhookEvent<"pull_request.opened">["payload"]} event.payload
  */
 async function handlePullRequestOpened({ octokit, payload }) {
-  console.log(
-    `Received a pull request event for #${payload.pull_request.number}`,
-  );
+  console.log(`Received a pull request event for #${payload.pull_request.number}`);
 
   try {
-    await octokit.request(
-      "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
-      {
-        owner: payload.repository.owner.login,
-        repo: payload.repository.name,
-        issue_number: payload.pull_request.number,
-        body: messageForNewPRs,
-        headers: {
-          "x-github-api-version": "2026-03-10",
-        },
+    await octokit.request("POST /repos/{owner}/{repo}/issues/{issue_number}/comments", {
+      owner: payload.repository.owner.login,
+      repo: payload.repository.name,
+      issue_number: payload.pull_request.number,
+      body: messageForNewPRs,
+      headers: {
+        "x-github-api-version": "2026-03-10",
       },
-    );
+    });
   } catch (error) {
     if (error instanceof Error && "response" in error) {
-      const err =
-        /** @type {{ response: { status: number; data: { message: string } } }} */ (
-          error
-        );
-      console.error(
-        `Error! Status: ${err.response.status}. Message: ${err.response.data.message}`,
+      const err = /** @type {{ response: { status: number; data: { message: string } } }} */ (
+        error
       );
+      console.error(`Error! Status: ${err.response.status}. Message: ${err.response.data.message}`);
     }
     console.error(error);
   }
@@ -132,27 +122,21 @@ async function handleIssueCommentCreated({ octokit, payload }) {
   ].join("\n");
 
   try {
-    await octokit.request(
-      "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
-      {
-        owner: payload.repository.owner.login,
-        repo: payload.repository.name,
-        issue_number: payload.issue.number,
-        body: body,
-        headers: {
-          "x-github-api-version": "2026-03-10",
-        },
+    await octokit.request("POST /repos/{owner}/{repo}/issues/{issue_number}/comments", {
+      owner: payload.repository.owner.login,
+      repo: payload.repository.name,
+      issue_number: payload.issue.number,
+      body: body,
+      headers: {
+        "x-github-api-version": "2026-03-10",
       },
-    );
+    });
   } catch (error) {
     if (error instanceof Error && "response" in error) {
-      const err =
-        /** @type {{ response: { status: number; data: { message: string } } }} */ (
-          error
-        );
-      console.error(
-        `Error! Status: ${err.response.status}. Message: ${err.response.data.message}`,
+      const err = /** @type {{ response: { status: number; data: { message: string } } }} */ (
+        error
       );
+      console.error(`Error! Status: ${err.response.status}. Message: ${err.response.data.message}`);
     }
     console.error(error);
   }
