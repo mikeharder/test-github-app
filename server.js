@@ -5,6 +5,7 @@ import { logs, SeverityNumber } from "@opentelemetry/api-logs";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import { readFile } from "fs/promises";
+import { createServer } from "http";
 import { App } from "octokit";
 
 // Code Quality
@@ -16,6 +17,16 @@ import { App } from "octokit";
 // TODO: Deploy to app service
 // TODO: Send events from test repo to app service (in addition to dev machine)
 // TODO: Add unit tests
+
+if (!process.env.CLIENT_ID) {
+  throw new Error("CLIENT_ID is not set");
+}
+if (!process.env.WEBHOOK_SECRET) {
+  throw new Error("WEBHOOK_SECRET is not set");
+}
+if (!process.env.PRIVATE_KEY_PATH) {
+  throw new Error("PRIVATE_KEY_PATH is not set");
+}
 
 if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
   useAzureMonitor({ enableLiveMetrics: true });
@@ -32,18 +43,7 @@ if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
 const logger = logs.getLogger("test-github-app");
 
 const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
-const port = process.env.PORT || "3000";
-
-if (!process.env.CLIENT_ID) {
-  throw new Error("CLIENT_ID is not set");
-}
-if (!process.env.WEBHOOK_SECRET) {
-  throw new Error("WEBHOOK_SECRET is not set");
-}
-if (!process.env.PRIVATE_KEY_PATH) {
-  throw new Error("PRIVATE_KEY_PATH is not set");
-}
-
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const clientId = process.env.CLIENT_ID;
 const webhookSecret = process.env.WEBHOOK_SECRET;
 const privateKeyPath = process.env.PRIVATE_KEY_PATH;
@@ -177,7 +177,11 @@ createServer((req, res) => {
   console.log(
     `${new Date().toISOString()} ${req.method} ${req.url} from ${req.socket.remoteAddress}`,
   );
-  middleware(req, res);
+  middleware(req, res).catch((error) => {
+    console.error(error);
+    res.writeHead(500);
+    res.end();
+  });
 }).listen(port, host, () => {
   console.log(`Server is listening for events at: ${localWebhookUrl}`);
   console.log("Press Ctrl + C to quit.");
