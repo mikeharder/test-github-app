@@ -1,17 +1,13 @@
 import { useAzureMonitor } from "@azure/monitor-opentelemetry";
 import { createNodeMiddleware } from "@octokit/webhooks";
 import { trace } from "@opentelemetry/api";
-import { logs, SeverityNumber } from "@opentelemetry/api-logs";
+import { SeverityNumber } from "@opentelemetry/api-logs";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import { readFile } from "fs/promises";
 import { createServer } from "http";
 import { App } from "octokit";
-
-// Code Quality
-// TODO: Enable JS comments and intellisense
-// TODO: Enable ESLint
-// TODO: Enable Prettier
+import { logger } from "./logger.js";
 
 // TODO: Move webhook_secret and certificate to KV
 // TODO: Deploy to app service
@@ -37,8 +33,6 @@ if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
 } else {
   console.log("APPLICATIONINSIGHTS_CONNECTION_STRING not set; skipping Azure Monitor");
 }
-
-const logger = logs.getLogger("test-github-app");
 
 const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;

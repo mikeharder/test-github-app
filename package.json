@@ -20,6 +20,7 @@
     "@eslint/js": "^10.0.0",
     "@octokit/webhooks": "^14.2.0",
     "@tsconfig/node22": "^22.0.5",
+    "@vitest/coverage-v8": "^4.1.0",
     "cross-env": "^10.1.0",
     "eslint": "^10.0.0",
     "globals": "^17.0.0",
@@ -27,7 +28,8 @@
     "prettier-plugin-organize-imports": "^4.2.0",
     "smee-client": "^5.0.0",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.58.0"
+    "typescript-eslint": "^8.58.0",
+    "vitest": "^4.1.0"
   },
   "scripts": {
     "check": "npm run test:ci && npm run lint && npm run format:check",
@@ -39,7 +41,7 @@
     "lint:tsc": "tsc --build --verbose",
     "start": "node --env-file-if-exists=.env --import @azure/monitor-opentelemetry/loader src/server.js",
     "smee": "node --env-file-if-exists=.env src/smee.js",
-    "test": "echo no-op",
-    "test:ci": "echo no-op"
+    "test": "vitest",
+    "test:ci": "vitest run --coverage --reporter=verbose"
   }
 }
