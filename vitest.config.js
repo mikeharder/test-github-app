@@ -9,7 +9,7 @@ export default defineConfig({
         // Config files (not in defaults)
         "eslint*.config.js",
       ],
-      include: ["src/**/*.js"],
+      include: ["src/**/*.ts"],
     },
   },
 });
