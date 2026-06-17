@@ -1,13 +1,13 @@
 import { useAzureMonitor } from "@azure/monitor-opentelemetry";
-import { createNodeMiddleware } from "@octokit/webhooks";
+import { createNodeMiddleware, type EmitterWebhookEvent } from "@octokit/webhooks";
 import { trace } from "@opentelemetry/api";
 import { SeverityNumber } from "@opentelemetry/api-logs";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { UndiciInstrumentation } from "@opentelemetry/instrumentation-undici";
 import { readFile } from "fs/promises";
 import { createServer } from "http";
-import { App } from "octokit";
-import { logger } from "./logger.js";
+import { App, type Octokit } from "octokit";
+import { logger } from "./logger.ts";
 
 // TODO: Move webhook_secret and certificate to KV
 // TODO: Deploy to app service
@@ -52,12 +52,13 @@ const app = new App({
 
 const messageForNewPRs = "test comment from github app";
 
-/**
- * @param {object} event
- * @param {import("octokit").Octokit} event.octokit
- * @param {import("@octokit/webhooks").EmitterWebhookEvent<"pull_request.opened">["payload"]} event.payload
- */
-async function handlePullRequestOpened({ octokit, payload }) {
+async function handlePullRequestOpened({
+  octokit,
+  payload,
+}: {
+  octokit: Octokit;
+  payload: EmitterWebhookEvent<"pull_request.opened">["payload"];
+}) {
   console.log(`Received a pull request event for #${payload.pull_request.number}`);
 
   try {
@@ -72,21 +73,20 @@ async function handlePullRequestOpened({ octokit, payload }) {
     });
   } catch (error) {
     if (error instanceof Error && "response" in error) {
-      const err = /** @type {{ response: { status: number; data: { message: string } } }} */ (
-        error
-      );
+      const err = error as { response: { status: number; data: { message: string } } };
       console.error(`Error! Status: ${err.response.status}. Message: ${err.response.data.message}`);
     }
     console.error(error);
   }
 }
 
-/**
- * @param {object} event
- * @param {import("octokit").Octokit} event.octokit
- * @param {import("@octokit/webhooks").EmitterWebhookEvent<"issue_comment.created">["payload"]} event.payload
- */
-async function handleIssueCommentCreated({ octokit, payload }) {
+async function handleIssueCommentCreated({
+  octokit,
+  payload,
+}: {
+  octokit: Octokit;
+  payload: EmitterWebhookEvent<"issue_comment.created">["payload"];
+}) {
   const span = trace.getActiveSpan();
   span?.setAttributes({
     issue_number: payload.issue?.number,
@@ -127,9 +127,7 @@ async function handleIssueCommentCreated({ octokit, payload }) {
     });
   } catch (error) {
     if (error instanceof Error && "response" in error) {
-      const err = /** @type {{ response: { status: number; data: { message: string } } }} */ (
-        error
-      );
+      const err = error as { response: { status: number; data: { message: string } } };
       console.error(`Error! Status: ${err.response.status}. Message: ${err.response.data.message}`);
     }
     console.error(error);
