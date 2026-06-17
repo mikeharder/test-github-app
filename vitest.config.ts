@@ -7,7 +7,7 @@ export default defineConfig({
         ...(configDefaults.coverage.exclude ?? []),
 
         // Config files (not in defaults)
-        "eslint*.config.ts",
+        "eslint*.config.js",
       ],
       include: ["src/**/*.ts"],
     },
