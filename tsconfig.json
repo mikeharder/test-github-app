@@ -1,5 +1,5 @@
 // Used for type-checking of TypeScript sources (run directly via Node type stripping) and the
-// repo's JavaScript config files (eslint.config.js, vitest.config.js, etc.).
+// repo's JavaScript config files (eslint.config.js, eslint.base.config.js).
 {
   "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
