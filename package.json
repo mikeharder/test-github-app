@@ -24,6 +24,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^10.0.0",
     "globals": "^17.0.0",
+    "jiti": "^2.7.0",
     "prettier": "3.8.1",
     "prettier-plugin-organize-imports": "^4.2.0",
     "smee-client": "^5.0.0",
