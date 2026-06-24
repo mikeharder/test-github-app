@@ -22,7 +22,7 @@ that uses the `gh` CLI, so the two paths can be compared.
 
 ## Tech stack
 
-- **Runtime:** Node.js (`^22.21.0 || >=24.10.0`; CI uses Node 24).
+- **Runtime:** Node.js (`>=24.14.1`; CI uses Node 24.14.1).
 - **Language:** TypeScript, run directly via Node's native type stripping — there is **no compile/emit step**.
   `tsconfig.json` is used for type-checking only (`noEmit`). Intra-repo imports use explicit `.ts` extensions.
 - **Libraries:** `octokit` / `@octokit/webhooks`, `@azure/monitor-opentelemetry`, `smee-client` (dev).
@@ -110,7 +110,7 @@ The server listens at `http://localhost:3000/api/webhook` by default. Open a pul
 ## Continuous integration
 
 `.github/workflows/test.yaml` runs on pull requests and pushes to `main`, executing `npm run test:ci`,
-`npm run lint`, and the format check on Node 24.
+`npm run lint`, and the format check on Node 24.14.1.
 
 ## Deployment
 
